@@ -8,28 +8,12 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&family=Zen+Antique+Soft&family=BIZ+UDPGothic:wght@400;700&display=swap');
 
-:root {
-–bg: #0f1923;
-–panel: #162030;
-–card: #1e2d3d;
-–border: #2a4060;
-–accent: #4fc3f7;
-–gold: #ffd54f;
-–green: #69f0ae;
-–red: #ff5252;
-–text: #e8f4fd;
-–muted: #607d8b;
-–slot-empty: #0d1f30;
-–slot-border: #2a5080;
-–glow: 0 0 20px rgba(79,195,247,0.4);
-}
-
 - { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
 font-family: ‘Noto Serif JP’, serif;
-background: var(–bg);
-color: var(–text);
+background: #0f1923;
+color: #e8f4fd;
 min-height: 100vh;
 display: flex;
 flex-direction: column;
@@ -56,7 +40,7 @@ z-index: 1;
 width: 100%;
 padding: 16px 20px 12px;
 text-align: center;
-border-bottom: 1px solid var(–border);
+border-bottom: 1px solid #2a4060;
 background: rgba(22,32,48,0.9);
 backdrop-filter: blur(10px);
 }
@@ -65,7 +49,7 @@ header h1 {
 font-family: ‘Zen Antique Soft’, serif;
 font-size: 1.3rem;
 letter-spacing: 0.3em;
-color: var(–accent);
+color: #4fc3f7;
 text-shadow: 0 0 20px rgba(79,195,247,0.5);
 }
 
@@ -75,23 +59,23 @@ gap: 24px;
 justify-content: center;
 margin-top: 8px;
 font-size: 0.78rem;
-color: var(–muted);
+color: #607d8b;
 letter-spacing: 0.15em;
 }
-.hud-val { color: var(–gold); font-weight: 700; font-size: 1rem; }
-.hud-val.green { color: var(–green); }
+.hud-val { color: #ffd54f; font-weight: 700; font-size: 1rem; }
+.hud-val.green { color: #69f0ae; }
 
 .progress-bar {
 width: 200px;
 height: 4px;
-background: var(–border);
+background: #2a4060;
 border-radius: 2px;
 margin: 8px auto 0;
 overflow: hidden;
 }
 .progress-fill {
 height: 100%;
-background: linear-gradient(90deg, var(–accent), var(–green));
+background: linear-gradient(90deg, #4fc3f7, #69f0ae);
 border-radius: 2px;
 transition: width 0.5s ease;
 box-shadow: 0 0 8px rgba(79,195,247,0.6);
@@ -108,8 +92,8 @@ flex: 1;
 
 /* === PUZZLE CARD === */
 .puzzle-card {
-background: var(–panel);
-border: 1px solid var(–border);
+background: #162030;
+border: 1px solid #2a4060;
 border-radius: 12px;
 padding: 24px 20px 20px;
 margin-bottom: 16px;
@@ -130,7 +114,7 @@ margin-bottom: 14px;
 .q-num {
 font-size: 0.72rem;
 letter-spacing: 0.3em;
-color: var(–accent);
+color: #4fc3f7;
 background: rgba(79,195,247,0.08);
 border: 1px solid rgba(79,195,247,0.2);
 padding: 3px 10px;
@@ -138,7 +122,7 @@ border-radius: 20px;
 }
 .q-meaning {
 font-size: 0.85rem;
-color: var(–gold);
+color: #ffd54f;
 letter-spacing: 0.1em;
 }
 
@@ -154,8 +138,8 @@ letter-spacing: 0.05em;
 .blank-word {
 display: inline-block;
 min-width: 2.4em;
-border-bottom: 2px solid var(–accent);
-color: var(–accent);
+border-bottom: 2px solid #4fc3f7;
+color: #4fc3f7;
 font-family: ‘Zen Antique Soft’, serif;
 font-size: 1.3em;
 line-height: 1.2;
@@ -183,9 +167,9 @@ gap: 8px;
 .drop-zone {
 width: 130px;
 height: 130px;
-border: 2px dashed var(–slot-border);
+border: 2px dashed #2a5080;
 border-radius: 8px;
-background: var(–slot-empty);
+background: #0d1f30;
 display: flex;
 align-items: center;
 justify-content: center;
@@ -198,25 +182,25 @@ cursor: default;
 user-select: none;
 }
 .drop-zone.drag-over {
-border-color: var(–accent);
+border-color: #4fc3f7;
 background: rgba(79,195,247,0.08);
-box-shadow: var(–glow);
+box-shadow: 0 0 20px rgba(79,195,247,0.4);
 }
 .drop-zone.filled {
-border-color: var(–green);
+border-color: #69f0ae;
 border-style: solid;
 background: rgba(105,240,174,0.06);
-color: var(–text);
+color: #e8f4fd;
 box-shadow: 0 0 20px rgba(105,240,174,0.3);
 }
 .drop-zone.wrong-flash {
-border-color: var(–red);
+border-color: #ff5252;
 background: rgba(255,82,82,0.1);
 box-shadow: 0 0 20px rgba(255,82,82,0.4);
 }
 .drop-zone-label {
 font-size: 0.7rem;
-color: var(–muted);
+color: #607d8b;
 letter-spacing: 0.2em;
 text-align: center;
 }
@@ -224,7 +208,7 @@ text-align: center;
 /* === PARTS TRAY === */
 .parts-label {
 font-size: 0.7rem;
-color: var(–muted);
+color: #607d8b;
 letter-spacing: 0.2em;
 margin-bottom: 8px;
 }
@@ -237,7 +221,7 @@ gap: 8px;
 align-content: flex-start;
 min-height: 130px;
 background: rgba(0,0,0,0.2);
-border: 1px solid var(–border);
+border: 1px solid #2a4060;
 border-radius: 8px;
 padding: 12px;
 }
@@ -250,8 +234,8 @@ height: 56px;
 display: flex;
 align-items: center;
 justify-content: center;
-background: var(–card);
-border: 1.5px solid var(–border);
+background: #1e2d3d;
+border: 1.5px solid #2a4060;
 border-radius: 6px;
 cursor: grab;
 transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, opacity 0.3s;
@@ -259,11 +243,11 @@ position: relative;
 user-select: none;
 touch-action: none;
 }
-.part-chip:hover { transform: translateY(-2px) scale(1.05); border-color: var(–accent); box-shadow: 0 4px 16px rgba(79,195,247,0.3); }
+.part-chip:hover { transform: translateY(-2px) scale(1.05); border-color: #4fc3f7; box-shadow: 0 4px 16px rgba(79,195,247,0.3); }
 .part-chip[data-part=“⻌”] { font-family: “Noto Sans JP”, “Noto Serif JP”, serif; }
 .part-chip.dragging { opacity: 0.4; transform: scale(0.95); cursor: grabbing; }
-.part-chip.correct-used { opacity: 0.2; pointer-events: none; border-color: var(–green); }
-.part-chip.decoy { border-color: var(–border); }
+.part-chip.correct-used { opacity: 0.2; pointer-events: none; border-color: #69f0ae; }
+.part-chip.decoy { border-color: #2a4060; }
 
 /* === FEEDBACK === */
 .feedback-bar {
@@ -275,16 +259,16 @@ line-height: 1.6;
 min-height: 44px;
 transition: all 0.25s;
 }
-.feedback-bar.correct { background: rgba(105,240,174,0.1); border: 1px solid rgba(105,240,174,0.3); color: var(–green); }
-.feedback-bar.wrong   { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.3);  color: var(–red); }
-.feedback-bar.info    { background: rgba(79,195,247,0.08); border: 1px solid rgba(79,195,247,0.2); color: var(–accent); }
+.feedback-bar.correct { background: rgba(105,240,174,0.1); border: 1px solid rgba(105,240,174,0.3); color: #69f0ae; }
+.feedback-bar.wrong   { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.3);  color: #ff5252; }
+.feedback-bar.info    { background: rgba(79,195,247,0.08); border: 1px solid rgba(79,195,247,0.2); color: #4fc3f7; }
 .feedback-bar.hidden  { opacity: 0; pointer-events: none; }
 
 .next-btn {
 width: 100%;
 margin-top: 12px;
 padding: 12px;
-background: linear-gradient(135deg, var(–accent), #0288d1);
+background: linear-gradient(135deg, #4fc3f7, #0288d1);
 color: #001824;
 border: none;
 border-radius: 6px;
@@ -300,18 +284,18 @@ display: none;
 
 /* === RESULT === */
 .result-screen {
-background: var(–panel);
-border: 1px solid var(–border);
+background: #162030;
+border: 1px solid #2a4060;
 border-radius: 12px;
 padding: 36px 24px;
 text-align: center;
 animation: slideIn 0.4s ease;
 display: none;
 }
-.result-title { font-family: ‘Zen Antique Soft’, serif; font-size: 1.6rem; color: var(–gold); margin-bottom: 8px; }
-.result-sub { color: var(–muted); font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 20px; }
-.result-big { font-size: 4rem; font-family: ‘Zen Antique Soft’, serif; color: var(–gold); line-height: 1; margin: 12px 0; text-shadow: 0 0 30px rgba(255,213,79,0.5); }
-.result-big span { font-size: 1.2rem; color: var(–muted); }
+.result-title { font-family: ‘Zen Antique Soft’, serif; font-size: 1.6rem; color: #ffd54f; margin-bottom: 8px; }
+.result-sub { color: #607d8b; font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 20px; }
+.result-big { font-size: 4rem; font-family: ‘Zen Antique Soft’, serif; color: #ffd54f; line-height: 1; margin: 12px 0; text-shadow: 0 0 30px rgba(255,213,79,0.5); }
+.result-big span { font-size: 1.2rem; color: #607d8b; }
 
 .kanji-grid {
 display: grid;
@@ -327,15 +311,15 @@ padding: 10px 4px 4px;
 border-radius: 6px;
 border: 1px solid;
 }
-.kanji-result.ok { border-color: rgba(105,240,174,0.3); background: rgba(105,240,174,0.06); color: var(–text); }
-.kanji-result.ng { border-color: rgba(255,82,82,0.3); background: rgba(255,82,82,0.06); color: var(–red); }
-.kanji-result small { display: block; font-size: 0.55rem; font-family: ‘Noto Serif JP’, serif; color: var(–muted); letter-spacing: 0; margin-top: 2px; }
+.kanji-result.ok { border-color: rgba(105,240,174,0.3); background: rgba(105,240,174,0.06); color: #e8f4fd; }
+.kanji-result.ng { border-color: rgba(255,82,82,0.3); background: rgba(255,82,82,0.06); color: #ff5252; }
+.kanji-result small { display: block; font-size: 0.55rem; font-family: ‘Noto Serif JP’, serif; color: #607d8b; letter-spacing: 0; margin-top: 2px; }
 
 .retry-btn {
 padding: 13px 40px;
-background: var(–card);
-color: var(–accent);
-border: 1.5px solid var(–accent);
+background: #1e2d3d;
+color: #4fc3f7;
+border: 1.5px solid #4fc3f7;
 border-radius: 6px;
 font-family: ‘Noto Serif JP’, serif;
 font-size: 0.95rem;
@@ -343,7 +327,7 @@ letter-spacing: 0.2em;
 cursor: pointer;
 transition: all 0.2s;
 }
-.retry-btn:hover { background: rgba(79,195,247,0.1); box-shadow: var(–glow); }
+.retry-btn:hover { background: rgba(79,195,247,0.1); box-shadow: 0 0 20px rgba(79,195,247,0.4); }
 
 /* === DRAG GHOST === */
 #dragGhost {
@@ -354,10 +338,10 @@ font-family: ‘BIZ UDPGothic’, ‘Noto Serif JP’, serif;
 font-size: 2rem;
 width: 60px; height: 60px;
 display: flex; align-items: center; justify-content: center;
-background: var(–card);
-border: 2px solid var(–accent);
+background: #1e2d3d;
+border: 2px solid #4fc3f7;
 border-radius: 8px;
-box-shadow: 0 8px 24px rgba(0,0,0,0.6), var(–glow);
+box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 20px rgba(79,195,247,0.4);
 opacity: 0;
 transition: opacity 0.1s;
 }
@@ -622,7 +606,7 @@ function receivePart(part) {
     dz.classList.add('filled');
 
     const bw = document.getElementById('blankWord');
-    if (bw) { bw.textContent = q.kanji; bw.style.color = 'var(--green)'; }
+    if (bw) { bw.textContent = q.kanji; bw.style.color = '#69f0ae'; }
 
     answered = true;
     correct++;
@@ -640,7 +624,7 @@ function receivePart(part) {
     if (!infoDiv) {
       infoDiv = document.createElement('div');
       infoDiv.className = 'dz-parts';
-      infoDiv.style.cssText = 'font-size:1.2rem;color:var(--accent);text-align:center;line-height:1.5;padding:4px;font-family:"BIZ UDPGothic","Noto Serif JP",serif;';
+      infoDiv.style.cssText = 'font-size:1.2rem;color:#4fc3f7;text-align:center;line-height:1.5;padding:4px;font-family:"BIZ UDPGothic","Noto Serif JP",serif;';
       dz.appendChild(infoDiv);
     }
     infoDiv.textContent = progress;
@@ -670,7 +654,7 @@ function showResult() {
     <div class="result-title">クイズ終了！</div>
     <div class="result-sub">第26課　漢字パーツパズル</div>
     <div class="result-big">${correct} <span>/ ${shuffled.length}</span></div>
-    <div style="color:var(--gold);margin-bottom:16px;letter-spacing:0.1em">${pct}%　${grade}</div>
+    <div style="color:#ffd54f;margin-bottom:16px;letter-spacing:0.1em">${pct}%　${grade}</div>
     <div class="kanji-grid">
       ${shuffled.map(q => {
         const r = results.find(r => r.q === q);
