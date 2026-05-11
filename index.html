@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>第26課 漢字パズル</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Antique+Soft&family=BIZ+UDPGothic:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&family=Zen+Antique+Soft&family=BIZ+UDPGothic:wght@400;700&display=swap');
 
 :root {
 –bg: #0f1923;
@@ -245,7 +245,7 @@ padding: 12px;
 .part-chip {
 font-family: ‘BIZ UDPGothic’, ‘Noto Serif JP’, serif;
 font-size: 1.6rem;
-width: 56px;
+width: 64px;
 height: 56px;
 display: flex;
 align-items: center;
@@ -260,6 +260,7 @@ user-select: none;
 touch-action: none;
 }
 .part-chip:hover { transform: translateY(-2px) scale(1.05); border-color: var(–accent); box-shadow: 0 4px 16px rgba(79,195,247,0.3); }
+.part-chip[data-part=“⻌”] { font-family: “Noto Sans JP”, “Noto Serif JP”, serif; }
 .part-chip.dragging { opacity: 0.4; transform: scale(0.95); cursor: grabbing; }
 .part-chip.correct-used { opacity: 0.2; pointer-events: none; border-color: var(–green); }
 .part-chip.decoy { border-color: var(–border); }
@@ -384,21 +385,21 @@ transition: opacity 0.1s;
 
 <script>
 const QUESTIONS = [
-  { kanji:"遊", reading:"あそ(ぶ)", meaning:"to play",     parts:["方","子","辶"], decoys:["力","土","走"], sentence:"子供が公園で___ぶ。", explan:"辶＋方＋子　旗を持った子が出かけるイメージ" },
+  { kanji:"遊", reading:"あそ(ぶ)", meaning:"to play",     parts:["方","子","⻌"], decoys:["力","土","走"], sentence:"子供が公園で___ぶ。", explan:"⻌＋方＋子　旗を持った子が出かけるイメージ" },
   { kanji:"泳", reading:"およ(ぐ)", meaning:"to swim",     parts:["氵","永"],     decoys:["氺","水","川"], sentence:"水の中を___ぐ。", explan:"氵（さんずい）＋永　水の中を泳ぐ" },
   { kanji:"疲", reading:"つか(れる)", meaning:"exhausted", parts:["疒","皮"],     decoys:["广","皮","病"], sentence:"働きすぎて___れた。", explan:"疒（やまいだれ）＋皮　皮まで疲れきった" },
   { kanji:"暖", reading:"あたた(かい)", meaning:"warm",    parts:["日","爰"],     decoys:["月","友","手"], sentence:"春になって___かい。", explan:"日＋爰（友と手を合わせる）　太陽と友の温もり" },
   { kanji:"涼", reading:"すず(しい)", meaning:"cool",      parts:["氵","京"],     decoys:["冫","都","亰"], sentence:"秋風が___しい。", explan:"氵＋京　雨が降って都が涼しくなった" },
   { kanji:"静", reading:"しず(か)", meaning:"quiet",       parts:["青","争"],     decoys:["清","力","青"], sentence:"図書館は___かだ。", explan:"青＋争　争いが終わると場所は静かに" },
-  { kanji:"公", reading:"おおやけ", meaning:"public",      parts:["八","ム"],     decoys:["人","口","丶"], sentence:"___務員は市民のために働く。", explan:"八（分ける）＋ム　みんなに分ける＝公" },
-  { kanji:"園", reading:"その/えん", meaning:"park",       parts:["囗","袁"],     decoys:["口","衣","土"], sentence:"土曜日に動物___に行く。", explan:"囗（かこい）の中に植物。公園・庭のイメージ" },
-  { kanji:"込", reading:"こ(む)", meaning:"crowded",       parts:["辶","入"],     decoys:["走","人","乙"], sentence:"電車が___んでいる。", explan:"辶＋入　中に入り込む" },
-  { kanji:"連", reading:"つ(れる)", meaning:"take along",  parts:["辶","車"],     decoys:["走","田","力"], sentence:"子供を学校に___れていく。", explan:"辶＋車　車がつながって進む" },
-  { kanji:"窓", reading:"まど", meaning:"window",          parts:["穴","囱"],     decoys:["宀","心","夂"], sentence:"___を開けて風を入れる。", explan:"穴（あな）＋囱　光が入る窓" },
+  { kanji:"公", reading:"おおやけ", meaning:"public",      parts:["八","ム"],     decoys:["人","丁","丶"], sentence:"___務員は市民のために働く。", explan:"八（分ける）＋ム　みんなに分ける＝公" },
+  { kanji:"園", reading:"その/えん", meaning:"park",       parts:["囗","袁"],     decoys:["方","衣","土"], sentence:"土曜日に動物___に行く。", explan:"囗（かこい）の中に植物。公園・庭のイメージ" },
+  { kanji:"込", reading:"こ(む)", meaning:"crowded",       parts:["⻌","入"],     decoys:["走","人","乙"], sentence:"電車が___んでいる。", explan:"⻌＋入　中に入り込む" },
+  { kanji:"連", reading:"つ(れる)", meaning:"take along",  parts:["⻌","車"],     decoys:["走","田","力"], sentence:"子供を学校に___れていく。", explan:"⻌＋車　車がつながって進む" },
+  { kanji:"窓", reading:"まど", meaning:"window",          parts:["宀","儿","厶","心"], decoys:["穴","工","夂"], sentence:"___を開けて風を入れる。", explan:"宀（うかんむり）＋儿（にんにょう）＋厶＋心" },
   { kanji:"側", reading:"がわ", meaning:"side",            parts:["亻","則"],     decoys:["彳","刀","貝"], sentence:"右___に立ってください。", explan:"亻（人）＋則（きまり）　人の側にルールがある" },
   { kanji:"葉", reading:"は", meaning:"leaf",              parts:["艹","世","木"], decoys:["草","一","土"], sentence:"秋に___が赤くなる。", explan:"艹＋世＋木　木についた葉" },
   { kanji:"景", reading:"け(しき)", meaning:"scenery",     parts:["日","京"],     decoys:["月","亰","光"], sentence:"富士山の___色がきれいだ。", explan:"日（太陽）＋京（都）　太陽に照らされた都の風景" },
-  { kanji:"記", reading:"き(ろく)", meaning:"record",      parts:["言","己"],     decoys:["口","自","已"], sentence:"日___をつけている。", explan:"言＋己（自分）　自分のことを言葉に残す" },
+  { kanji:"記", reading:"き(ろく)", meaning:"record",      parts:["言","己"],     decoys:["糸","自","已"], sentence:"日___をつけている。", explan:"言＋己（自分）　自分のことを言葉に残す" },
   { kanji:"形", reading:"かたち", meaning:"shape",         parts:["开","彡"],     decoys:["干","三","ノ"], sentence:"星の___をした飾り。", explan:"开＋彡（かざり）　形に模様がついたイメージ" },
 ];
 
@@ -583,7 +584,6 @@ function receivePart(part) {
   const dz = document.getElementById('dropZone');
 
   if (!q.parts.includes(part)) {
-    // Wrong part
     dz.classList.add('wrong-flash');
     setTimeout(() => dz.classList.remove('wrong-flash'), 500);
     showFb('wrong', `「${part}」はこの漢字のパーツではありません。`);
@@ -597,26 +597,30 @@ function receivePart(part) {
 
   droppedParts.add(part);
 
-  // Mark chip as used
-  document.querySelectorAll(`.part-chip`).forEach(c => {
+  // チップをグレーアウト
+  document.querySelectorAll('.part-chip').forEach(c => {
     if (c.dataset.part === part && !c.classList.contains('correct-used')) {
       c.classList.add('correct-used');
     }
   });
 
-  // Show progress in drop zone
   const progress = [...droppedParts].join(' ＋ ');
   const preview = document.getElementById('kanjiPreview');
 
   if (droppedParts.size === q.parts.length) {
-    // All parts collected! Show kanji
-    dz.classList.add('filled');
-    preview.style.opacity = '1';
-    preview.style.transition = 'opacity 0.3s, transform 0.3s';
-    preview.style.transform = 'scale(1.1)';
-    setTimeout(() => preview.style.transform = 'scale(1)', 300);
+    // 全パーツ揃った → dz-partsを消して漢字を表示
+    const infoDiv = dz.querySelector('.dz-parts');
+    if (infoDiv) infoDiv.remove();
 
-    // Fill blank in sentence
+    preview.style.display = '';
+    preview.style.opacity = '1';
+    preview.style.fontSize = '4.5rem';
+    preview.style.transition = 'opacity 0.3s, transform 0.3s';
+    preview.style.transform = 'scale(1.15)';
+    setTimeout(() => preview.style.transform = 'scale(1)', 350);
+
+    dz.classList.add('filled');
+
     const bw = document.getElementById('blankWord');
     if (bw) { bw.textContent = q.kanji; bw.style.color = 'var(--green)'; }
 
@@ -629,12 +633,16 @@ function receivePart(part) {
     document.getElementById('hudC').textContent = correct;
     document.getElementById('hudS').textContent = score;
   } else {
-    dz.style.fontSize = '1.2rem';
-    dz.style.color = 'var(--accent)';
-    dz.querySelector('span') && (dz.querySelector('span').style.display = 'none');
-    // Show collected parts text inside drop zone
+    // 途中経過：kanjiPreviewを隠してdz-partsにテキスト表示
+    preview.style.display = 'none';
+
     let infoDiv = dz.querySelector('.dz-parts');
-    if (!infoDiv) { infoDiv = document.createElement('div'); infoDiv.className = 'dz-parts'; infoDiv.style.cssText = 'font-size:1.4rem;color:var(--accent);text-align:center;letter-spacing:0.1em'; dz.appendChild(infoDiv); }
+    if (!infoDiv) {
+      infoDiv = document.createElement('div');
+      infoDiv.className = 'dz-parts';
+      infoDiv.style.cssText = 'font-size:1.2rem;color:var(--accent);text-align:center;line-height:1.5;padding:4px;font-family:"BIZ UDPGothic","Noto Serif JP",serif;';
+      dz.appendChild(infoDiv);
+    }
     infoDiv.textContent = progress;
     showFb('info', `「${part}」を追加！ あと ${q.parts.length - droppedParts.size} パーツ`);
   }
