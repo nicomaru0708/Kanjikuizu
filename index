@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第26課 漢字パズル</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Zen+Antique+Soft&display=swap');
+
+:root {
+–bg: #0f1923;
+–panel: #162030;
+–card: #1e2d3d;
+–border: #2a4060;
+–accent: #4fc3f7;
+–gold: #ffd54f;
+–green: #69f0ae;
+–red: #ff5252;
+–text: #e8f4fd;
+–muted: #607d8b;
+–slot-empty: #0d1f30;
+–slot-border: #2a5080;
+–glow: 0 0 20px rgba(79,195,247,0.4);
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: ‘Noto Serif JP’, serif;
+background: var(–bg);
+color: var(–text);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image:
+linear-gradient(rgba(79,195,247,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(79,195,247,0.03) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none;
+z-index: 0;
+}
+
+header {
+position: relative;
+z-index: 1;
+width: 100%;
+padding: 16px 20px 12px;
+text-align: center;
+border-bottom: 1px solid var(–border);
+background: rgba(22,32,48,0.9);
+backdrop-filter: blur(10px);
+}
+
+header h1 {
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 1.3rem;
+letter-spacing: 0.3em;
+color: var(–accent);
+text-shadow: 0 0 20px rgba(79,195,247,0.5);
+}
+
+.hud {
+display: flex;
+gap: 24px;
+justify-content: center;
+margin-top: 8px;
+font-size: 0.78rem;
+color: var(–muted);
+letter-spacing: 0.15em;
+}
+.hud-val { color: var(–gold); font-weight: 700; font-size: 1rem; }
+.hud-val.green { color: var(–green); }
+
+.progress-bar {
+width: 200px;
+height: 4px;
+background: var(–border);
+border-radius: 2px;
+margin: 8px auto 0;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–accent), var(–green));
+border-radius: 2px;
+transition: width 0.5s ease;
+box-shadow: 0 0 8px rgba(79,195,247,0.6);
+}
+
+main {
+position: relative;
+z-index: 1;
+width: 100%;
+max-width: 700px;
+padding: 24px 16px 60px;
+flex: 1;
+}
+
+/* === PUZZLE CARD === */
+.puzzle-card {
+background: var(–panel);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 24px 20px 20px;
+margin-bottom: 16px;
+box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+animation: slideIn 0.35s ease;
+}
+@keyframes slideIn {
+from { opacity: 0; transform: translateY(12px); }
+to   { opacity: 1; transform: translateY(0); }
+}
+
+.q-meta {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 14px;
+}
+.q-num {
+font-size: 0.72rem;
+letter-spacing: 0.3em;
+color: var(–accent);
+background: rgba(79,195,247,0.08);
+border: 1px solid rgba(79,195,247,0.2);
+padding: 3px 10px;
+border-radius: 20px;
+}
+.q-meaning {
+font-size: 0.85rem;
+color: var(–gold);
+letter-spacing: 0.1em;
+}
+
+/* Sentence */
+.sentence-area {
+text-align: center;
+font-size: 1.05rem;
+color: #b0c4d8;
+margin-bottom: 20px;
+line-height: 1.8;
+letter-spacing: 0.05em;
+}
+.blank-word {
+display: inline-block;
+min-width: 2.4em;
+border-bottom: 2px solid var(–accent);
+color: var(–accent);
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 1.3em;
+line-height: 1.2;
+text-align: center;
+vertical-align: middle;
+margin: 0 2px;
+}
+
+/* === DROP ZONE === */
+.puzzle-area {
+display: flex;
+align-items: flex-start;
+gap: 20px;
+flex-wrap: wrap;
+}
+
+.drop-zone-wrap {
+flex: 0 0 auto;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 8px;
+}
+
+.drop-zone {
+width: 130px;
+height: 130px;
+border: 2px dashed var(–slot-border);
+border-radius: 8px;
+background: var(–slot-empty);
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 5rem;
+color: transparent;
+position: relative;
+transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+cursor: default;
+user-select: none;
+}
+.drop-zone.drag-over {
+border-color: var(–accent);
+background: rgba(79,195,247,0.08);
+box-shadow: var(–glow);
+}
+.drop-zone.filled {
+border-color: var(–green);
+border-style: solid;
+background: rgba(105,240,174,0.06);
+color: var(–text);
+box-shadow: 0 0 20px rgba(105,240,174,0.3);
+}
+.drop-zone.wrong-flash {
+border-color: var(–red);
+background: rgba(255,82,82,0.1);
+box-shadow: 0 0 20px rgba(255,82,82,0.4);
+}
+.drop-zone-label {
+font-size: 0.7rem;
+color: var(–muted);
+letter-spacing: 0.2em;
+text-align: center;
+}
+
+/* === PARTS TRAY === */
+.parts-label {
+font-size: 0.7rem;
+color: var(–muted);
+letter-spacing: 0.2em;
+margin-bottom: 8px;
+}
+
+.parts-tray {
+flex: 1;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+align-content: flex-start;
+min-height: 130px;
+background: rgba(0,0,0,0.2);
+border: 1px solid var(–border);
+border-radius: 8px;
+padding: 12px;
+}
+
+.part-chip {
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 1.6rem;
+width: 56px;
+height: 56px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(–card);
+border: 1.5px solid var(–border);
+border-radius: 6px;
+cursor: grab;
+transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, opacity 0.3s;
+position: relative;
+user-select: none;
+touch-action: none;
+}
+.part-chip:hover { transform: translateY(-2px) scale(1.05); border-color: var(–accent); box-shadow: 0 4px 16px rgba(79,195,247,0.3); }
+.part-chip.dragging { opacity: 0.4; transform: scale(0.95); cursor: grabbing; }
+.part-chip.correct-used { opacity: 0.2; pointer-events: none; border-color: var(–green); }
+.part-chip.decoy { border-color: var(–border); }
+
+/* === FEEDBACK === */
+.feedback-bar {
+margin-top: 14px;
+padding: 10px 14px;
+border-radius: 6px;
+font-size: 0.88rem;
+line-height: 1.6;
+min-height: 44px;
+transition: all 0.25s;
+}
+.feedback-bar.correct { background: rgba(105,240,174,0.1); border: 1px solid rgba(105,240,174,0.3); color: var(–green); }
+.feedback-bar.wrong   { background: rgba(255,82,82,0.1);  border: 1px solid rgba(255,82,82,0.3);  color: var(–red); }
+.feedback-bar.info    { background: rgba(79,195,247,0.08); border: 1px solid rgba(79,195,247,0.2); color: var(–accent); }
+.feedback-bar.hidden  { opacity: 0; pointer-events: none; }
+
+.next-btn {
+width: 100%;
+margin-top: 12px;
+padding: 12px;
+background: linear-gradient(135deg, var(–accent), #0288d1);
+color: #001824;
+border: none;
+border-radius: 6px;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 0.95rem;
+font-weight: 700;
+letter-spacing: 0.2em;
+cursor: pointer;
+transition: transform 0.15s, box-shadow 0.15s;
+display: none;
+}
+.next-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(79,195,247,0.4); }
+
+/* === RESULT === */
+.result-screen {
+background: var(–panel);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 36px 24px;
+text-align: center;
+animation: slideIn 0.4s ease;
+display: none;
+}
+.result-title { font-family: ‘Zen Antique Soft’, serif; font-size: 1.6rem; color: var(–gold); margin-bottom: 8px; }
+.result-sub { color: var(–muted); font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 20px; }
+.result-big { font-size: 4rem; font-family: ‘Zen Antique Soft’, serif; color: var(–gold); line-height: 1; margin: 12px 0; text-shadow: 0 0 30px rgba(255,213,79,0.5); }
+.result-big span { font-size: 1.2rem; color: var(–muted); }
+
+.kanji-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 6px;
+margin: 20px 0;
+text-align: center;
+}
+.kanji-result {
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 1.8rem;
+padding: 10px 4px 4px;
+border-radius: 6px;
+border: 1px solid;
+}
+.kanji-result.ok { border-color: rgba(105,240,174,0.3); background: rgba(105,240,174,0.06); color: var(–text); }
+.kanji-result.ng { border-color: rgba(255,82,82,0.3); background: rgba(255,82,82,0.06); color: var(–red); }
+.kanji-result small { display: block; font-size: 0.55rem; font-family: ‘Noto Serif JP’, serif; color: var(–muted); letter-spacing: 0; margin-top: 2px; }
+
+.retry-btn {
+padding: 13px 40px;
+background: var(–card);
+color: var(–accent);
+border: 1.5px solid var(–accent);
+border-radius: 6px;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 0.95rem;
+letter-spacing: 0.2em;
+cursor: pointer;
+transition: all 0.2s;
+}
+.retry-btn:hover { background: rgba(79,195,247,0.1); box-shadow: var(–glow); }
+
+/* === DRAG GHOST === */
+#dragGhost {
+position: fixed;
+pointer-events: none;
+z-index: 9999;
+font-family: ‘Zen Antique Soft’, serif;
+font-size: 2rem;
+width: 60px; height: 60px;
+display: flex; align-items: center; justify-content: center;
+background: var(–card);
+border: 2px solid var(–accent);
+border-radius: 8px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.6), var(–glow);
+opacity: 0;
+transition: opacity 0.1s;
+}
+</style>
+
+</head>
+<body>
+
+<div id="dragGhost"></div>
+
+<header>
+  <h1>第26課　漢字パズル</h1>
+  <div class="hud">
+    <div>問題 <span class="hud-val" id="hudQ">1</span> / 16</div>
+    <div>正解 <span class="hud-val green" id="hudC">0</span></div>
+    <div>スコア <span class="hud-val" id="hudS">0</span></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+</header>
+
+<main>
+  <div class="puzzle-card" id="puzzleCard"></div>
+  <div class="result-screen" id="resultScreen"></div>
+</main>
+
+<script>
+const QUESTIONS = [
+  { kanji:"遊", reading:"あそ(ぶ)", meaning:"to play",     parts:["方","子","辶"], decoys:["力","土","走"], sentence:"子供が公園で___ぶ。", explan:"辶＋方＋子　旗を持った子が出かけるイメージ" },
+  { kanji:"泳", reading:"およ(ぐ)", meaning:"to swim",     parts:["氵","永"],     decoys:["氺","水","川"], sentence:"水の中を___ぐ。", explan:"氵（さんずい）＋永　水の中を泳ぐ" },
+  { kanji:"疲", reading:"つか(れる)", meaning:"exhausted", parts:["疒","皮"],     decoys:["广","皮","病"], sentence:"働きすぎて___れた。", explan:"疒（やまいだれ）＋皮　皮まで疲れきった" },
+  { kanji:"暖", reading:"あたた(かい)", meaning:"warm",    parts:["日","爰"],     decoys:["月","友","手"], sentence:"春になって___かい。", explan:"日＋爰（友と手を合わせる）　太陽と友の温もり" },
+  { kanji:"涼", reading:"すず(しい)", meaning:"cool",      parts:["氵","京"],     decoys:["冫","都","亰"], sentence:"秋風が___しい。", explan:"氵＋京　雨が降って都が涼しくなった" },
+  { kanji:"静", reading:"しず(か)", meaning:"quiet",       parts:["青","争"],     decoys:["清","力","青"], sentence:"図書館は___かだ。", explan:"青＋争　争いが終わると場所は静かに" },
+  { kanji:"公", reading:"おおやけ", meaning:"public",      parts:["八","ム"],     decoys:["人","口","丶"], sentence:"___務員は市民のために働く。", explan:"八（分ける）＋ム　みんなに分ける＝公" },
+  { kanji:"園", reading:"その/えん", meaning:"park",       parts:["囗","袁"],     decoys:["口","衣","土"], sentence:"土曜日に動物___に行く。", explan:"囗（かこい）の中に植物。公園・庭のイメージ" },
+  { kanji:"込", reading:"こ(む)", meaning:"crowded",       parts:["辶","入"],     decoys:["走","人","乙"], sentence:"電車が___んでいる。", explan:"辶＋入　中に入り込む" },
+  { kanji:"連", reading:"つ(れる)", meaning:"take along",  parts:["辶","車"],     decoys:["走","田","力"], sentence:"子供を学校に___れていく。", explan:"辶＋車　車がつながって進む" },
+  { kanji:"窓", reading:"まど", meaning:"window",          parts:["穴","囱"],     decoys:["宀","心","夂"], sentence:"___を開けて風を入れる。", explan:"穴（あな）＋囱　光が入る窓" },
+  { kanji:"側", reading:"がわ", meaning:"side",            parts:["亻","則"],     decoys:["彳","刀","貝"], sentence:"右___に立ってください。", explan:"亻（人）＋則（きまり）　人の側にルールがある" },
+  { kanji:"葉", reading:"は", meaning:"leaf",              parts:["艹","世","木"], decoys:["草","一","土"], sentence:"秋に___が赤くなる。", explan:"艹＋世＋木　木についた葉" },
+  { kanji:"景", reading:"け(しき)", meaning:"scenery",     parts:["日","京"],     decoys:["月","亰","光"], sentence:"富士山の___色がきれいだ。", explan:"日（太陽）＋京（都）　太陽に照らされた都の風景" },
+  { kanji:"記", reading:"き(ろく)", meaning:"record",      parts:["言","己"],     decoys:["口","自","已"], sentence:"日___をつけている。", explan:"言＋己（自分）　自分のことを言葉に残す" },
+  { kanji:"形", reading:"かたち", meaning:"shape",         parts:["开","彡"],     decoys:["干","三","ノ"], sentence:"星の___をした飾り。", explan:"开＋彡（かざり）　形に模様がついたイメージ" },
+];
+
+let shuffled = [], current = 0, score = 0, correct = 0;
+let results = [];
+let droppedParts = new Set();
+let answered = false;
+let dragEl = null, ghost = document.getElementById('dragGhost');
+
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [b[i],b[j]] = [b[j],b[i]];
+  }
+  return b;
+}
+
+function startQuiz() {
+  shuffled = shuffle(QUESTIONS);
+  current = 0; score = 0; correct = 0; results = [];
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('puzzleCard').style.display = '';
+  render();
+}
+
+function render() {
+  answered = false;
+  droppedParts = new Set();
+  const q = shuffled[current];
+  const allParts = shuffle([...q.parts, ...q.decoys.slice(0, Math.max(0, 5 - q.parts.length))]);
+
+  // Update HUD
+  document.getElementById('hudQ').textContent = current + 1;
+  document.getElementById('hudC').textContent = correct;
+  document.getElementById('hudS').textContent = score;
+  document.getElementById('progFill').style.width = (current / shuffled.length * 100) + '%';
+
+  const card = document.getElementById('puzzleCard');
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-num">問題 ${current+1} / ${shuffled.length}</span>
+      <span class="q-meaning">${q.meaning}</span>
+    </div>
+    <div class="sentence-area">${buildSentence(q)}</div>
+    <div class="puzzle-area">
+      <div class="drop-zone-wrap">
+        <div class="drop-zone" id="dropZone" data-needed="${q.parts.length}">
+          <span id="kanjiPreview" style="opacity:0;font-family:'Zen Antique Soft',serif">${q.kanji}</span>
+        </div>
+        <div class="drop-zone-label">ここにパーツをドラッグ</div>
+      </div>
+      <div style="flex:1">
+        <div class="parts-label">パーツ　▼ ドラッグして枠へ</div>
+        <div class="parts-tray" id="partsTray">
+          ${allParts.map((p,i) => `<div class="part-chip" draggable="true" data-part="${p}" id="chip-${i}">${p}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="feedback-bar hidden" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">
+      ${current < shuffled.length-1 ? '次の問題へ →' : '結果を見る →'}
+    </button>
+  `;
+
+  // Setup drag events on chips
+  card.querySelectorAll('.part-chip').forEach(chip => {
+    chip.addEventListener('mousedown', onMouseDown);
+    chip.addEventListener('touchstart', onTouchStart, {passive:false});
+  });
+
+  const dz = document.getElementById('dropZone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+  dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleDrop(e); });
+}
+
+function buildSentence(q) {
+  return q.sentence.replace('___', `<span class="blank-word" id="blankWord">___</span>`);
+}
+
+// ---- Drag & Drop (mouse) ----
+let dragData = null;
+
+function onMouseDown(e) {
+  if (answered) return;
+  const chip = e.currentTarget;
+  dragData = chip.dataset.part;
+  chip.classList.add('dragging');
+  ghost.textContent = dragData;
+  ghost.style.opacity = '1';
+  moveGhost(e.clientX, e.clientY);
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+function onMouseMove(e) {
+  moveGhost(e.clientX, e.clientY);
+  // highlight drop zone
+  const dz = document.getElementById('dropZone');
+  const r = dz.getBoundingClientRect();
+  if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) {
+    dz.classList.add('drag-over');
+  } else {
+    dz.classList.remove('drag-over');
+  }
+}
+function onMouseUp(e) {
+  ghost.style.opacity = '0';
+  document.querySelectorAll('.part-chip').forEach(c => c.classList.remove('dragging'));
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+  const dz = document.getElementById('dropZone');
+  dz.classList.remove('drag-over');
+  if (!dragData) return;
+  const r = dz.getBoundingClientRect();
+  if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) {
+    receivePart(dragData);
+  }
+  dragData = null;
+}
+
+// ---- Touch support ----
+let touchChip = null, touchPart = null;
+function onTouchStart(e) {
+  if (answered) return;
+  e.preventDefault();
+  touchChip = e.currentTarget;
+  touchPart = touchChip.dataset.part;
+  touchChip.classList.add('dragging');
+  ghost.textContent = touchPart;
+  ghost.style.opacity = '1';
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  document.addEventListener('touchmove', onTouchMove, {passive:false});
+  document.addEventListener('touchend', onTouchEnd);
+}
+function onTouchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  const dz = document.getElementById('dropZone');
+  const r = dz.getBoundingClientRect();
+  if (t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom) {
+    dz.classList.add('drag-over');
+  } else {
+    dz.classList.remove('drag-over');
+  }
+}
+function onTouchEnd(e) {
+  ghost.style.opacity = '0';
+  if (touchChip) touchChip.classList.remove('dragging');
+  document.removeEventListener('touchmove', onTouchMove);
+  document.removeEventListener('touchend', onTouchEnd);
+  const dz = document.getElementById('dropZone');
+  dz.classList.remove('drag-over');
+  const t = e.changedTouches[0];
+  const r = dz.getBoundingClientRect();
+  if (t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom) {
+    receivePart(touchPart);
+  }
+  touchChip = null; touchPart = null;
+}
+
+function moveGhost(x, y) {
+  ghost.style.left = (x - 30) + 'px';
+  ghost.style.top  = (y - 30) + 'px';
+}
+
+// Also support HTML5 drag
+document.querySelectorAll?.('.part-chip')?.forEach(c => {
+  c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.part); });
+});
+
+function handleDrop(e) {
+  const part = e.dataTransfer?.getData('text/plain') || dragData;
+  if (part) receivePart(part);
+}
+
+function receivePart(part) {
+  if (answered) return;
+  const q = shuffled[current];
+  const dz = document.getElementById('dropZone');
+
+  if (!q.parts.includes(part)) {
+    // Wrong part
+    dz.classList.add('wrong-flash');
+    setTimeout(() => dz.classList.remove('wrong-flash'), 500);
+    showFb('wrong', `「${part}」はこの漢字のパーツではありません。`);
+    return;
+  }
+
+  if (droppedParts.has(part)) {
+    showFb('info', `「${part}」はもう入っています。`);
+    return;
+  }
+
+  droppedParts.add(part);
+
+  // Mark chip as used
+  document.querySelectorAll(`.part-chip`).forEach(c => {
+    if (c.dataset.part === part && !c.classList.contains('correct-used')) {
+      c.classList.add('correct-used');
+    }
+  });
+
+  // Show progress in drop zone
+  const progress = [...droppedParts].join(' ＋ ');
+  const preview = document.getElementById('kanjiPreview');
+
+  if (droppedParts.size === q.parts.length) {
+    // All parts collected! Show kanji
+    dz.classList.add('filled');
+    preview.style.opacity = '1';
+    preview.style.transition = 'opacity 0.3s, transform 0.3s';
+    preview.style.transform = 'scale(1.1)';
+    setTimeout(() => preview.style.transform = 'scale(1)', 300);
+
+    // Fill blank in sentence
+    const bw = document.getElementById('blankWord');
+    if (bw) { bw.textContent = q.kanji; bw.style.color = 'var(--green)'; }
+
+    answered = true;
+    correct++;
+    score += 10;
+    results.push({ q, ok: true });
+    showFb('correct', `🎉 正解！「${q.kanji}」（${q.reading}）　${q.explan}`);
+    document.getElementById('nextBtn').style.display = 'block';
+    document.getElementById('hudC').textContent = correct;
+    document.getElementById('hudS').textContent = score;
+  } else {
+    dz.style.fontSize = '1.2rem';
+    dz.style.color = 'var(--accent)';
+    dz.querySelector('span') && (dz.querySelector('span').style.display = 'none');
+    // Show collected parts text inside drop zone
+    let infoDiv = dz.querySelector('.dz-parts');
+    if (!infoDiv) { infoDiv = document.createElement('div'); infoDiv.className = 'dz-parts'; infoDiv.style.cssText = 'font-size:1.4rem;color:var(--accent);text-align:center;letter-spacing:0.1em'; dz.appendChild(infoDiv); }
+    infoDiv.textContent = progress;
+    showFb('info', `「${part}」を追加！ あと ${q.parts.length - droppedParts.size} パーツ`);
+  }
+}
+
+function showFb(type, msg) {
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback-bar ' + type;
+  fb.textContent = msg;
+}
+
+function nextQ() {
+  current++;
+  if (current >= shuffled.length) showResult();
+  else render();
+}
+
+function showResult() {
+  document.getElementById('puzzleCard').style.display = 'none';
+  document.getElementById('progFill').style.width = '100%';
+  const pct = Math.round(correct / shuffled.length * 100);
+  let grade = pct === 100 ? '🏆 パーフェクト！' : pct >= 80 ? '🌟 すごい！' : pct >= 60 ? '📖 もう少し！' : '✏️ 復習しよう';
+  const rs = document.getElementById('resultScreen');
+  rs.innerHTML = `
+    <div class="result-title">クイズ終了！</div>
+    <div class="result-sub">第26課　漢字パーツパズル</div>
+    <div class="result-big">${correct} <span>/ ${shuffled.length}</span></div>
+    <div style="color:var(--gold);margin-bottom:16px;letter-spacing:0.1em">${pct}%　${grade}</div>
+    <div class="kanji-grid">
+      ${shuffled.map(q => {
+        const r = results.find(r => r.q === q);
+        const ok = r?.ok;
+        return `<div class="kanji-result ${ok ? 'ok' : 'ng'}">${q.kanji}<small>${q.reading}</small></div>`;
+      }).join('')}
+    </div>
+    <button class="retry-btn" onclick="startQuiz()">もう一度チャレンジ ↺</button>
+  `;
+  rs.style.display = 'block';
+}
+
+startQuiz();
+</script>
+
+</body>
+</html>
